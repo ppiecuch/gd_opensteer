@@ -90,7 +90,7 @@ public:
     // draw into the scene
     void draw (void)
     {
-        OpenSteer::App::drawBoxHighlightOnVehicle (*this, gGray50);
+        OpenSteer::App::get_singleton()->drawBoxHighlightOnVehicle (*this, gGray50);
         drawTrail ();
     }
 
@@ -153,17 +153,17 @@ public:
         for (int i = 0; i < lstCount; i++) all.push_back (new LowSpeedTurn);
 
         // initial selected vehicle
-        OpenSteer::App::selectedVehicle = *all.begin();
+        OpenSteer::App::get_singleton()->selectedVehicle = *all.begin();
 
         // initialize camera
-        OpenSteer::App::camera.mode = Camera::cmFixed;
-        OpenSteer::App::camera.fixedUp = lstPlusZ;
-        OpenSteer::App::camera.fixedTarget = lstViewCenter;
-        OpenSteer::App::camera.fixedPosition = lstViewCenter;
-        OpenSteer::App::camera.fixedPosition.y += lstLookDownDistance;
-        OpenSteer::App::camera.lookdownDistance = lstLookDownDistance;
-        OpenSteer::App::camera.fixedDistVOffset = OpenSteer::App::camera2dElevation;
-        OpenSteer::App::camera.fixedDistDistance = OpenSteer::App::cameraTargetDistance;
+        OpenSteer::App::get_singleton()->camera.mode = Camera::cmFixed;
+        OpenSteer::App::get_singleton()->camera.fixedUp = lstPlusZ;
+        OpenSteer::App::get_singleton()->camera.fixedTarget = lstViewCenter;
+        OpenSteer::App::get_singleton()->camera.fixedPosition = lstViewCenter;
+        OpenSteer::App::get_singleton()->camera.fixedPosition.y += lstLookDownDistance;
+        OpenSteer::App::get_singleton()->camera.lookdownDistance = lstLookDownDistance;
+        OpenSteer::App::get_singleton()->camera.fixedDistVOffset = OpenSteer::App::get_singleton()->camera2dElevation;
+        OpenSteer::App::get_singleton()->camera.fixedDistDistance = OpenSteer::App::get_singleton()->cameraTargetDistance;
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -178,16 +178,16 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *OpenSteer::App::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteer::App::get_singleton()->selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *OpenSteer::App::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteer::App::get_singleton()->vehicleNearestToMouse ();
 
         // update camera
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteer::App::get_singleton()->updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        OpenSteer::App::gridUtility (selected.position());
+        OpenSteer::App::get_singleton()->gridUtility (selected.position());
       
         // update, draw and annotate each agent
         for (iterator i = all.begin(); i != all.end(); i++)
@@ -209,7 +209,7 @@ public:
         }
 
         // highlight vehicle nearest mouse
-        OpenSteer::App::highlightVehicleUtility (nearMouse);
+        OpenSteer::App::get_singleton()->highlightVehicleUtility (nearMouse);
     }
 
     void close (void)

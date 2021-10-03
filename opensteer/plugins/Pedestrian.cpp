@@ -246,7 +246,7 @@ public:
     // draw this pedestrian into scene
     void draw (void)
     {
-        OpenSteer::App::drawBoxHighlightOnVehicle (*this, gGray50);
+        App::get_singleton()->drawBoxHighlightOnVehicle (*this, gGray50);
         drawTrail ();
     }
 
@@ -289,7 +289,7 @@ public:
         const Vec3 color = headOn ? red : green;
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5, 0);
-        if (OpenSteer::App::annotationIsOn())
+        if (App::get_singleton()->annotationIsOn())
             Draw::drawTextAt3dLocation (string, location, color);
     }
 
@@ -447,10 +447,10 @@ public:
 
         // initialize camera and selectedVehicle
         Pedestrian& firstPedestrian = **crowd.begin();
-        OpenSteer::App::init3dCamera (firstPedestrian);
-        OpenSteer::App::camera.mode = Camera::cmFixedDistanceOffset;
-        OpenSteer::App::camera.fixedTarget.set (15, 0, 30);
-        OpenSteer::App::camera.fixedPosition.set (15, 70, -70);
+        App::get_singleton()->init3dCamera (firstPedestrian);
+        App::get_singleton()->camera.mode = Camera::cmFixedDistanceOffset;
+        App::get_singleton()->camera.fixedTarget.set (15, 0, 30);
+        App::get_singleton()->camera.fixedPosition.set (15, 70, -70);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -465,17 +465,17 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected Pedestrian (user can mouse click to select another)
-        AbstractVehicle& selected = *OpenSteer::App::selectedVehicle;
+        AbstractVehicle& selected = *App::get_singleton()->selectedVehicle;
 
         // Pedestrian nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *OpenSteer::App::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *App::get_singleton()->vehicleNearestToMouse ();
 
         // update camera
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, selected);
+        App::get_singleton()->updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        if (OpenSteer::App::selectedVehicle) gridCenter = selected.position();
-        OpenSteer::App::gridUtility (gridCenter);
+        if (App::get_singleton()->selectedVehicle) gridCenter = selected.position();
+        App::get_singleton()->gridUtility (gridCenter);
 
         // draw and annotate each Pedestrian
         for (iterator i = crowd.begin(); i != crowd.end(); i++) (**i).draw (); 
@@ -484,18 +484,18 @@ public:
         drawPathAndObstacles ();
 
         // highlight Pedestrian nearest mouse
-        OpenSteer::App::highlightVehicleUtility (nearMouse);
+        App::get_singleton()->highlightVehicleUtility (nearMouse);
 
         // textual annotation (at the vehicle's screen position)
         serialNumberAnnotationUtility (selected, nearMouse);
 
         // textual annotation for selected Pedestrian
-        if (OpenSteer::App::selectedVehicle && OpenSteer::App::annotationIsOn())
+        if (App::get_singleton()->selectedVehicle && App::get_singleton()->annotationIsOn())
         {
             const Vec3 color (0.8, 0.8, 1.0);
             const Vec3 textOffset (0, 0.25, 0);
             const Vec3 textPosition = selected.position() + textOffset;
-            const Vec3 camPosition = OpenSteer::App::camera.position();
+            const Vec3 camPosition = App::get_singleton()->camera.position();
             const float camDistance = Vec3::distance (selected.position(),
                                                       camPosition);
             const char* spacer = "      ";
@@ -536,7 +536,7 @@ public:
     {
         // display a Pedestrian's serial number as a text label near its
         // screen position when it is near the selected vehicle or mouse.
-        if (OpenSteer::App::annotationIsOn())
+        if (App::get_singleton()->annotationIsOn())
         {
             for (iterator i = crowd.begin(); i != crowd.end(); i++)
             {
@@ -584,9 +584,9 @@ public:
         // reset each Pedestrian
         for (iterator i = crowd.begin(); i != crowd.end(); i++) (**i).reset ();
         // reset camera position
-        OpenSteer::App::position2dCamera (*OpenSteer::App::selectedVehicle);
+        App::get_singleton()->position2dCamera (*App::get_singleton()->selectedVehicle);
         // make camera jump immediately to new position
-        OpenSteer::App::camera.doNotSmoothNextMove ();
+        App::get_singleton()->camera.doNotSmoothNextMove ();
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -606,14 +606,14 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        OpenSteer::App::printMessage (message);
-        OpenSteer::App::printMessage (message);
-        OpenSteer::App::printMessage ("  F1     add a pedestrian to the crowd.");
-        OpenSteer::App::printMessage ("  F2     remove a pedestrian from crowd.");
-        OpenSteer::App::printMessage ("  F3     use next proximity database.");
-        OpenSteer::App::printMessage ("  F4     toggle directed path follow.");
-        OpenSteer::App::printMessage ("  F5     toggle wander component on/off.");
-        OpenSteer::App::printMessage ("");
+        App::get_singleton()->printMessage (message);
+        App::get_singleton()->printMessage (message);
+        App::get_singleton()->printMessage ("  F1     add a pedestrian to the crowd.");
+        App::get_singleton()->printMessage ("  F2     remove a pedestrian from crowd.");
+        App::get_singleton()->printMessage ("  F3     use next proximity database.");
+        App::get_singleton()->printMessage ("  F4     toggle directed path follow.");
+        App::get_singleton()->printMessage ("  F5     toggle wander component on/off.");
+        App::get_singleton()->printMessage ("");
     }
 
 
@@ -622,7 +622,7 @@ public:
         population++;
         Pedestrian* pedestrian = new Pedestrian (*pd);
         crowd.push_back (pedestrian);
-        if (population == 1) OpenSteer::App::selectedVehicle = pedestrian;
+        if (population == 1) App::get_singleton()->selectedVehicle = pedestrian;
     }
 
 
@@ -636,8 +636,8 @@ public:
             population--;
 
             // if it is OpenSteer::App's selected vehicle, unselect it
-            if (pedestrian == OpenSteer::App::selectedVehicle)
-                OpenSteer::App::selectedVehicle = NULL;
+            if (pedestrian == App::get_singleton()->selectedVehicle)
+                App::get_singleton()->selectedVehicle = NULL;
 
             // delete the Pedestrian
             delete pedestrian;

@@ -344,7 +344,7 @@ void
 OpenSteer::AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
                                               const Vec3& tickColor)
 {
-    if (OpenSteer::App::annotationIsOn())
+    if (OpenSteer::App::get_singleton()->annotationIsOn())
     {
         int index = trailIndex;
         for (int j = 0; j < trailVertexCount; j++)
@@ -394,7 +394,7 @@ OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
                                                    const Vec3& endPoint,
                                                    const Vec3& color) const
 {
-    if (OpenSteer::App::annotationIsOn())
+    if (OpenSteer::App::get_singleton()->annotationIsOn())
     {
         Draw::drawLine (startPoint, endPoint, color);
     }
@@ -419,7 +419,7 @@ OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
                                                            const bool filled,
                                                            const bool in3d) const
 {
-    if (OpenSteer::App::annotationIsOn())
+    if (OpenSteer::App::get_singleton()->annotationIsOn())
     {
         Draw::drawCircle (radius, axis, center, color, segments, filled, in3d);
     }

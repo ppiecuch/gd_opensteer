@@ -69,7 +69,7 @@ public:
     // draw into the scene
     void draw (void)
     {
-        OpenSteer::App::drawBoxHighlightOnVehicle (*this, bodyColor);
+        App::get_singleton()->drawBoxHighlightOnVehicle (*this, bodyColor);
         drawTrail ();
     }
 
@@ -183,10 +183,10 @@ public:
         pEnd = allMP.end();          // iterator pointing to last pursuer
 
         // initialize camera
-        OpenSteer::App::selectedVehicle = wanderer;
-        OpenSteer::App::camera.mode = Camera::cmStraightDown;
-        OpenSteer::App::camera.fixedDistDistance = OpenSteer::App::cameraTargetDistance;
-        OpenSteer::App::camera.fixedDistVOffset = OpenSteer::App::camera2dElevation;
+        App::get_singleton()->selectedVehicle = wanderer;
+        App::get_singleton()->camera.mode = Camera::cmStraightDown;
+        App::get_singleton()->camera.fixedDistDistance = App::get_singleton()->cameraTargetDistance;
+        App::get_singleton()->camera.fixedDistVOffset = App::get_singleton()->camera2dElevation;
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -204,23 +204,23 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *OpenSteer::App::selectedVehicle;
+        AbstractVehicle& selected = *App::get_singleton()->selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *OpenSteer::App::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *App::get_singleton()->vehicleNearestToMouse ();
 
         // update camera
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, selected);
+        App::get_singleton()->updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        OpenSteer::App::gridUtility (selected.position());
+        App::get_singleton()->gridUtility (selected.position());
 
         // draw each vehicles
         for (iterator i = allMP.begin(); i != pEnd; i++) (**i).draw ();
 
         // highlight vehicle nearest mouse
-        OpenSteer::App::highlightVehicleUtility (nearMouse);
-        OpenSteer::App::circleHighlightVehicleUtility (selected);
+        App::get_singleton()->highlightVehicleUtility (nearMouse);
+        App::get_singleton()->circleHighlightVehicleUtility (selected);
     }
 
     void close (void)
@@ -238,8 +238,8 @@ public:
         for (iterator i = pBegin; i != pEnd; i++) ((MpPursuer&)(**i)).reset ();
 
         // immediately jump to default camera position
-        OpenSteer::App::camera.doNotSmoothNextMove ();
-        OpenSteer::App::camera.resetLocalSpace ();
+        App::get_singleton()->camera.doNotSmoothNextMove ();
+        App::get_singleton()->camera.resetLocalSpace ();
     }
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) allMP;}

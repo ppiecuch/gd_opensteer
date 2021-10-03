@@ -62,80 +62,71 @@ namespace OpenSteer {
         // ------------------------------------------------------ component objects
 
         // clock keeps track of both "real time" and "simulation time"
-        static Clock clock;
-
+        Clock clock;
         // camera automatically tracks selected vehicle
-        static Camera camera;
+        Camera camera;
 
         // ------------------------------------------ addresses of selected objects
 
         // currently selected plug-in (user can choose or cycle through them)
-        static PlugIn* selectedPlugIn;
+        PlugIn* selectedPlugIn;
 
         // currently selected vehicle.  Generally the one the camera follows and
         // for which additional information may be displayed.  Clicking the mouse
         // near a vehicle causes it to become the Selected Vehicle.
-        static AbstractVehicle* selectedVehicle;
+        AbstractVehicle* selectedVehicle;
 
         // -------------------------------------------- initialize, update and exit
 
-        // initialize OpenSteerDemo
-        //     XXX  if I switch from "totally static" to "singleton"
-        //     XXX  class structure this becomes the constructor
-        static void initialize (void);
+        App();
+        ~App();
+
+        // get App singleton object
+        static App* get_singleton() {return singleton;}
 
         // main update function: step simulation forward and redraw scene
-        static void updateSimulationAndRedraw (void);
+        void updateSimulationAndRedraw (void);
 
         // exit OpenSteerDemo with a given text message or error code
-        static void errorExit (const char* message);
-        static void exit (int exitCode);
+        void errorExit (const char* message);
+        void exit (int exitCode);
 
         // ------------------------------------------------------- PlugIn interface
 
         // select the default PlugIn
-        static void selectDefaultPlugIn (void);
-        
+        void selectDefaultPlugIn (void);
         // select the "next" plug-in, cycling through "plug-in selection order"
-        static void selectNextPlugIn (void);
-
+        void selectNextPlugIn (void);
         // handle function keys an a per-plug-in basis
-        static void functionKeyForPlugIn (int keyNumber);
-
+        void functionKeyForPlugIn (int keyNumber);
         // return name of currently selected plug-in
-        static const char* nameOfSelectedPlugIn (void);
-
+        const char* nameOfSelectedPlugIn (void);
         // open the currently selected plug-in
-        static void openSelectedPlugIn (void);
-
+        void openSelectedPlugIn (void);
         // do a simulation update for the currently selected plug-in
-        static void updateSelectedPlugIn (const float currentTime,
+        void updateSelectedPlugIn (const float currentTime,
                                           const float elapsedTime);
-
         // redraw graphics for the currently selected plug-in
-        static void redrawSelectedPlugIn (const float currentTime,
+        void redrawSelectedPlugIn (const float currentTime,
                                           const float elapsedTime);
-
         // close the currently selected plug-in
-        static void closeSelectedPlugIn (void);
-
+        void closeSelectedPlugIn (void);
         // reset the currently selected plug-in
-        static void resetSelectedPlugIn (void);
-
-        static const AVGroup& allVehiclesOfSelectedPlugIn(void);
+        void resetSelectedPlugIn (void);
+        const AVGroup& allVehiclesOfSelectedPlugIn(void);
 
         // ---------------------------------------------------- OpenSteerDemo phase
 
-        static bool phaseIsDraw     (void) {return phase == drawPhase;}
-        static bool phaseIsUpdate   (void) {return phase == updatePhase;}
-        static bool phaseIsOverhead (void) {return phase == overheadPhase;}
+        bool phaseIsDraw     (void) {return phase == drawPhase;}
+        bool phaseIsUpdate   (void) {return phase == updatePhase;}
+        bool phaseIsOverhead (void) {return phase == overheadPhase;}
 
-        static float phaseTimerDraw     (void) {return phaseTimers[drawPhase];}
-        static float phaseTimerUpdate   (void) {return phaseTimers[updatePhase];}
+        float phaseTimerDraw     (void) {return phaseTimers[drawPhase];}
+        float phaseTimerUpdate   (void) {return phaseTimers[updatePhase];}
         // XXX get around shortcomings in current implementation, see note
         // XXX in updateSimulationAndRedraw
-        //static float phaseTimerOverhead(void){return phaseTimers[overheadPhase];}
-        static float phaseTimerOverhead (void)
+        //float phaseTimerOverhead(void){return phaseTimers[overheadPhase];}
+        float phaseTimerOverhead (void)
         {
             return (clock.getElapsedRealTime() -
                     (phaseTimerDraw() + phaseTimerUpdate()));
@@ -144,141 +135,137 @@ namespace OpenSteer {
         // ------------------------------------------------------ delayed reset XXX
 
         // XXX to be reconsidered
-        static void queueDelayedResetPlugInXXX (void);
-        static void doDelayedResetPlugInXXX (void);
+        void queueDelayedResetPlugInXXX (void);
+        void doDelayedResetPlugInXXX (void);
 
         // ------------------------------------------------------ vehicle selection
 
         // select the "next" vehicle: cycle through the registry
-        static void selectNextVehicle (void);
-
+        void selectNextVehicle (void);
         // select vehicle nearest the given screen position (e.g.: of the mouse)
-        static void selectVehicleNearestScreenPosition (int x, int y);
+        void selectVehicleNearestScreenPosition (int x, int y);
 
         // ---------------------------------------------------------- mouse support
 
         // Find the AbstractVehicle whose screen position is nearest the
         // current the mouse position.  Returns NULL if mouse is outside
         // this window or if there are no AbstractVehicles.
-        static AbstractVehicle* vehicleNearestToMouse (void);
+        AbstractVehicle* vehicleNearestToMouse (void);
 
         // Find the AbstractVehicle whose screen position is nearest the
         // given window coordinates, typically the mouse position.  Note
         // this will return NULL if there are no AbstractVehicles.
-        static AbstractVehicle* findVehicleNearestScreenPosition (int x, int y);
+        AbstractVehicle* findVehicleNearestScreenPosition (int x, int y);
 
         // for storing most recent mouse state
-        static int mouseX;
-        static int mouseY;
-        static bool mouseInWindow;
+        int mouseX;
+        int mouseY;
+        bool mouseInWindow;
 
         // ------------------------------------------------------- camera utilities
 
         // set a certain initial camera state used by several plug-ins
-        static void init2dCamera (AbstractVehicle& selected);
-        static void init2dCamera (AbstractVehicle& selected,
-                                  float distance,
-                                  float elevation);
-        static void init3dCamera (AbstractVehicle& selected);
-        static void init3dCamera (AbstractVehicle& selected,
-                                  float distance,
-                                  float elevation);
+        void init2dCamera (AbstractVehicle& selected);
+        void init2dCamera (AbstractVehicle& selected,
+                           float distance,
+                           float elevation);
+        void init3dCamera (AbstractVehicle& selected);
+        void init3dCamera (AbstractVehicle& selected,
+                           float distance,
+                           float elevation);
 
         // set initial position of camera based on a vehicle
-        static void position3dCamera (AbstractVehicle& selected);
-        static void position3dCamera (AbstractVehicle& selected,
-                                      float distance,
-                                      float elevation);
-        static void position2dCamera (AbstractVehicle& selected);
-        static void position2dCamera (AbstractVehicle& selected,
-                                      float distance,
-                                      float elevation);
+        void position3dCamera (AbstractVehicle& selected);
+        void position3dCamera (AbstractVehicle& selected,
+                               float distance,
+                               float elevation);
+        void position2dCamera (AbstractVehicle& selected);
+        void position2dCamera (AbstractVehicle& selected,
+                               float distance,
+                               float elevation);
 
         // camera updating utility used by several (all?) plug-ins
-        static void updateCamera (const float currentTime,
-                                  const float elapsedTime,
-                                  const AbstractVehicle& selected);
+        void updateCamera (const float currentTime,
+                           const float elapsedTime,
+                           const AbstractVehicle& selected);
+
+        // return a normalized direction vector pointing from the camera towards a
+        // given point on the screen: the ray that would be traced for that pixel
+        Vec3 cameraToScreenPosition (int x, int y);
 
         // some camera-related default constants
-        static const float camera2dElevation;
-        static const float cameraTargetDistance;
-        static const Vec3 cameraTargetOffset;
+        const float camera2dElevation = 8;
+        const float cameraTargetDistance = 13;
+        const Vec3 cameraTargetOffset = Vec3  (0, OpenSteer::App::camera2dElevation, 0);
 
         // ------------------------------------------------ graphics and annotation
 
         // get drawing view size
-        static int drawViewWidth();
-        static int drawViewHeight();
-
-        // do all initialization related to graphics
-        static void initializeGraphics (void);
+        int drawViewWidth();
+        int drawViewHeight();
 
         // ground plane grid-drawing utility used by several plug-ins
-        static void gridUtility (const Vec3& gridTarget);
-
+        void gridUtility (const Vec3& gridTarget, bool withLines = false);
         // draws a gray disk on the XZ plane under a given vehicle
-        static void highlightVehicleUtility (const AbstractVehicle& vehicle);
-
+        void highlightVehicleUtility (const AbstractVehicle& vehicle);
         // draws a gray circle on the XZ plane under a given vehicle
-        static void circleHighlightVehicleUtility (const AbstractVehicle& vehicle);
-
+        void circleHighlightVehicleUtility (const AbstractVehicle& vehicle);
         // draw a box around a vehicle aligned with its local space
         // xxx not used as of 11-20-02
-        static void drawBoxHighlightOnVehicle (const AbstractVehicle& v,
+        void drawBoxHighlightOnVehicle (const AbstractVehicle& v,
                                                const Vec3 color);
-
         // draws a colored circle (perpendicular to view axis) around the center
         // of a given vehicle.  The circle's radius is the vehicle's radius times
         // radiusMultiplier.
-        static void drawCircleHighlightOnVehicle (const AbstractVehicle& v,
+        void drawCircleHighlightOnVehicle (const AbstractVehicle& v,
                                                   const Vec3 color,
                                                   const float radiusMultiplier = 1);
 
         // graphical annotation: master on/off switch
-        static bool annotationIsOn (void) {return enableAnnotation;}
-        static void setAnnotationOn (void) {enableAnnotation = true;}
-        static void setAnnotationOff (void) {enableAnnotation = false;}
-        static bool toggleAnnotationState (void) {return (enableAnnotation = !enableAnnotation);}
+        bool annotationIsOn (void) {return enableAnnotation;}
+        void setAnnotationOn (void) {enableAnnotation = true;}
+        void setAnnotationOff (void) {enableAnnotation = false;}
+        bool toggleAnnotationState (void) {return (enableAnnotation = !enableAnnotation);}
 
         // ----------------------------------------------------------- console text
 
         // print a line on the console with "OpenSteerDemo: " then the given ending
-        static void printMessage (const char* message);
-        static void printMessage (const std::ostringstream& message);
+        void printMessage (const char* message);
+        void printMessage (const std::ostringstream& message);
 
         // like printMessage but prefix is "OpenSteerDemo: Warning: "
-        static void printWarning (const char* message);
-        static void printWarning (const std::ostringstream& message);
+        void printWarning (const char* message);
+        void printWarning (const std::ostringstream& message);
 
         // print list of known commands
-        static void keyboardMiniHelp (void);
+        void keyboardMiniHelp (void);
 
         // ---------------------------------------------------------------- private
 
     private:
-        static bool enableAnnotation;
+        bool enableAnnotation;
 
-        static int phase;
-        static int phaseStack[];
-        static int phaseStackIndex;
-        static float phaseTimers[];
-        static float phaseTimerBase;
-        static const int phaseStackSize;
-        static void pushPhase (const int newPhase);
-        static void popPhase (void);
-        static void initPhaseTimers (void);
-        static void updatePhaseTimers (void);
+        // manage App phase transitions (xxx and maintain phase timers)
 
-        // XXX apparently MS VC6 cannot handle initialized static const members,
-        // XXX so they have to be initialized not-inline.
-        // static const int drawPhase = 2;
-        // static const int updatePhase = 1;
-        // static const int overheadPhase = 0;
-        static const int drawPhase;
-        static const int updatePhase;
-        static const int overheadPhase;
+        static const int drawPhase = 2;
+        static const int updatePhase = 1;
+        static const int overheadPhase = 0;
+        static const int phaseStackSize = 5;
+
+        int phase;
+        int phaseStack[phaseStackSize];
+        int phaseStackIndex;
+        float phaseTimers[drawPhase+1];
+        float phaseTimerBase;
+        void pushPhase (const int newPhase);
+        void popPhase (void);
+        void initPhaseTimers (void);
+        void updatePhaseTimers (void);
+
+        static App *singleton;
     };
 
+    // Minimum set of drawing/graphics routines used in annotations and plugins
     namespace Draw {
         // Define scene's camera (viewing transformation) in terms of the camera's
         // position, the point to look at (an "aim point" in the scene which will
@@ -287,9 +274,6 @@ namespace OpenSteer {
         // pointToLookAt (the image of the up vector will be vertical in the
         // camera's view).
         void drawCameraLookAt (const Vec3& cameraPosition, const Vec3& pointToLookAt, const Vec3& up);
-        // return a normalized direction vector pointing from the camera towards a
-        // given point on the screen: the ray that would be traced for that pixel
-        Vec3 directionFromCameraToScreenPosition (int x, int y);
         // draw 3d "graphical annotation" lines, used for debugging
         void drawLine (const Vec3& startPoint,
                        const Vec3& endPoint,
@@ -304,6 +288,10 @@ namespace OpenSteer {
                            const Vec3& endPoint,
                            const Vec3& color,
                            const float width);
+        // draw lines grid around center point with given color
+        void drawLineGrid (int hseg, int vseg,
+                           const Vec3& center,
+                           const Vec3& color);
         // General purpose circle/disk drawing routine.  Draws circles or disks (as
         // specified by "filled" argument) and handles both special case 2d circles
         // on the XZ plane or arbitrary circles in 3d space (as specified by "in3d"
@@ -357,7 +345,7 @@ namespace OpenSteer {
         void drawTextAt2dLocation(const char *text, const Vec3& position, const Vec3& color);
         void drawTextAt3dLocation(const std::ostringstream& text, const Vec3& position, const Vec3& color);
         void drawTextAt3dLocation(const char *text, const Vec3& position, const Vec3& color);
-	} // namespace Draw
+    } // namespace Draw
 
 } // namespace OpenSteer
 

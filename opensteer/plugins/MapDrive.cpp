@@ -431,7 +431,7 @@ public:
 
         // keep track for reliability statistics
         collisionLastTime = false;
-        timeOfLastCollision = OpenSteer::App::clock.getTotalSimulationTime ();
+        timeOfLastCollision = App::get_singleton()->clock.getTotalSimulationTime ();
 
         // keep track of average speed
         totalDistance = 0;
@@ -709,7 +709,7 @@ public:
         {
             std::ostringstream message;
             message << "collision after "<<timeSinceLastCollision<<" seconds";
-            OpenSteer::App::printMessage (message);
+            App::get_singleton()->printMessage (message);
             sumOfCollisionFreeTimes += timeSinceLastCollision;
             countOfCollisionFreeTimes++;
             timeOfLastCollision = currentTime;
@@ -1163,7 +1163,7 @@ public:
         annotationLine (pp - ff - ss, pp + ff - ss, gWhite);
         annotationLine (pp + ff + ss, pp + ff - ss, gWhite);
 
-        //OpenSteer::App::clock.setPausedState (true);
+        //App::get_singleton()->clock.setPausedState (true);
     }
 
 
@@ -1817,7 +1817,7 @@ public:
                 lapsFinished++;
 
                 const Vec3 camOffsetBefore =
-                    OpenSteer::App::camera.position() - position ();
+                    App::get_singleton()->camera.position() - position ();
 
                 // set position on other side of the map (set new X coordinate)
                 setPosition ((((px < 0) ? 1 : -1) *
@@ -1830,11 +1830,11 @@ public:
                 resetStuckCycleDetection ();
 
                 // new camera position and aimpoint to compensate for teleport
-                OpenSteer::App::camera.target = position ();
-                OpenSteer::App::camera.setPosition (position () + camOffsetBefore);
+                App::get_singleton()->camera.target = position ();
+                App::get_singleton()->camera.setPosition (position () + camOffsetBefore);
 
                 // make camera jump immediately to new position
-                OpenSteer::App::camera.doNotSmoothNextMove ();
+                App::get_singleton()->camera.doNotSmoothNextMove ();
 
                 // prevent long streaks due to teleportation 
                 clearTrailHistory ();
@@ -2240,7 +2240,7 @@ public:
         // make new MapDriver
         vehicle = new MapDriver ();
         vehicles.push_back (vehicle);
-        OpenSteer::App::selectedVehicle = vehicle;
+        App::get_singleton()->selectedVehicle = vehicle;
 
         // marks as obstacles map cells adjacent to the path
         usePathFences = true; 
@@ -2251,13 +2251,13 @@ public:
         // init OpenSteer::App camera
         initCamDist = 30;
         initCamElev = 15;
-        OpenSteer::App::init2dCamera (*vehicle, initCamDist, initCamElev);
+        App::get_singleton()->init2dCamera (*vehicle, initCamDist, initCamElev);
         // "look straight down at vehicle" camera mode parameters
-        OpenSteer::App::camera.lookdownDistance = 50;
+        App::get_singleton()->camera.lookdownDistance = 50;
         // "static" camera mode parameters
-        OpenSteer::App::camera.fixedPosition.set (145, 145, 145);
-        OpenSteer::App::camera.fixedTarget.set (40, 0, 40);
-        OpenSteer::App::camera.fixedUp = Vec3::up;
+        App::get_singleton()->camera.fixedPosition.set (145, 145, 145);
+        App::get_singleton()->camera.fixedTarget.set (40, 0, 40);
+        App::get_singleton()->camera.fixedUp = Vec3::up;
 
         // reset this plugin
         reset ();
@@ -2284,7 +2284,7 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // update camera, tracking test vehicle
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, *vehicle);
+        App::get_singleton()->updateCamera (currentTime, elapsedTime, *vehicle);
 
         // draw "ground plane"  (make it 4x map size)
         const float s = MapDriver::worldSize * 2;
@@ -2323,7 +2323,7 @@ public:
 
                << " mps\n\n";
         status << "collisions avoided for "
-               << (int)(OpenSteer::App::clock.getTotalSimulationTime () -
+               << (int)(App::get_singleton()->clock.getTotalSimulationTime () -
                         vehicle->timeOfLastCollision)
                << " seconds";
         if (vehicle->countOfCollisionFreeTimes > 0)
@@ -2384,7 +2384,7 @@ public:
         {
             const float v = 5;
             const float m = 10;
-            const float w = OpenSteer::App::drawViewWidth ();
+            const float w = App::get_singleton()->drawViewWidth ();
             const float f = w - (2 * m);
             const float s = vehicle->relativeSpeed ();
 
@@ -2427,9 +2427,9 @@ public:
         // reset vehicle
         vehicle->reset ();
         // make camera jump immediately to new position
-        OpenSteer::App::camera.doNotSmoothNextMove ();
+        App::get_singleton()->camera.doNotSmoothNextMove ();
         // reset camera position
-        OpenSteer::App::position2dCamera (*vehicle, initCamDist, initCamElev);
+        App::get_singleton()->position2dCamera (*vehicle, initCamDist, initCamElev);
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -2465,13 +2465,13 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        OpenSteer::App::printMessage (message);
-        OpenSteer::App::printMessage ("  F1     select next driving demo.");
-        OpenSteer::App::printMessage ("  F2     reverse path following direction.");
-        OpenSteer::App::printMessage ("  F3     toggle path fences.");
-        OpenSteer::App::printMessage ("  F4     toggle random rock clumps.");
-        OpenSteer::App::printMessage ("  F5     toggle curved prediction.");
-        OpenSteer::App::printMessage ("");
+        App::get_singleton()->printMessage (message);
+        App::get_singleton()->printMessage ("  F1     select next driving demo.");
+        App::get_singleton()->printMessage ("  F2     reverse path following direction.");
+        App::get_singleton()->printMessage ("  F3     toggle path fences.");
+        App::get_singleton()->printMessage ("  F4     toggle random rock clumps.");
+        App::get_singleton()->printMessage ("  F5     toggle curved prediction.");
+        App::get_singleton()->printMessage ("");
     }
 
     void reversePathFollowDirection (void)
@@ -2521,7 +2521,7 @@ public:
             break;
         }
         message << std::ends;
-        OpenSteer::App::printMessage (message);
+        App::get_singleton()->printMessage (message);
     }
 
     // random utility, worth moving to Utilities.h?

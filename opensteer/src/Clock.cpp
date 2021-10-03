@@ -240,7 +240,7 @@ void
 OpenSteer::Clock::advanceSimulationTime (const float seconds)
 {
     if (seconds < 0)
-        OpenSteer::App::errorExit ("negative arg to advanceSimulationTime.");
+        OpenSteer::App::get_singleton()->errorExit ("negative arg to advanceSimulationTime.");
     else
         newAdvanceTime += seconds;
 }
@@ -259,7 +259,7 @@ namespace {
     float 
     clockErrorExit (void)
     {
-        OpenSteer::App::errorExit ("Problem reading system clock.\n");
+        OpenSteer::App::get_singleton()->errorExit ("Problem reading system clock.\n");
         return 0.0f;
     }
 

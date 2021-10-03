@@ -245,7 +245,7 @@ void CtfEnemy::reset (void)
 
 void CtfBase::draw (void)
 {
-    OpenSteer::App::drawBoxHighlightOnVehicle (*this, bodyColor);
+    App::get_singleton()->get_singleton()->drawBoxHighlightOnVehicle (*this, bodyColor);
     drawTrail ();
 }
 
@@ -650,7 +650,7 @@ void CtfSeeker::updateState (const float currentTime)
         if (currentTime > resetTime) 
         {
             // xxx a royal hack (should do this internal to CTF):
-            OpenSteer::App::queueDelayedResetPlugInXXX ();
+            App::get_singleton()->get_singleton()->queueDelayedResetPlugInXXX ();
         }
     }
 }
@@ -842,10 +842,10 @@ public:
         }
 
         // initialize camera
-        OpenSteer::App::init2dCamera (*ctfSeeker);
-        OpenSteer::App::camera.mode = Camera::cmFixedDistanceOffset;
-        OpenSteer::App::camera.fixedTarget.set (15, 0, 0);
-        OpenSteer::App::camera.fixedPosition.set (80, 60, 0);
+        App::get_singleton()->get_singleton()->init2dCamera (*ctfSeeker);
+        App::get_singleton()->get_singleton()->camera.mode = Camera::cmFixedDistanceOffset;
+        App::get_singleton()->get_singleton()->camera.fixedTarget.set (15, 0, 0);
+        App::get_singleton()->get_singleton()->camera.fixedPosition.set (80, 60, 0);
 
         CtfBase::initializeObstacles ();
     }
@@ -865,24 +865,24 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *OpenSteer::App::selectedVehicle;
+        AbstractVehicle& selected = *App::get_singleton()->get_singleton()->selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *OpenSteer::App::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *App::get_singleton()->get_singleton()->vehicleNearestToMouse ();
 
         // update camera
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, selected);
+        App::get_singleton()->get_singleton()->updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane" centered between base and selected vehicle
-        const Vec3 goalOffset = gHomeBaseCenter-OpenSteer::App::camera.position();
+        const Vec3 goalOffset = gHomeBaseCenter-App::get_singleton()->get_singleton()->camera.position();
         const Vec3 goalDirection = goalOffset.normalize ();
-        const Vec3 cameraForward = OpenSteer::App::camera.xxxls().forward();
+        const Vec3 cameraForward = App::get_singleton()->get_singleton()->camera.xxxls().forward();
         const float goalDot = cameraForward.dot (goalDirection);
         const float blend = remapIntervalClip (goalDot, 1, 0, 0.5, 0);
         const Vec3 gridCenter = interpolate (blend,
                                              selected.position(),
                                              gHomeBaseCenter);
-        OpenSteer::App::gridUtility (gridCenter);
+        App::get_singleton()->get_singleton()->gridUtility (gridCenter);
 
         // draw the seeker, obstacles and home base
         ctfSeeker->draw();
@@ -893,7 +893,7 @@ public:
         for (int i = 0; i < ctfEnemyCount; i++) ctfEnemies[i]->draw ();
 
         // highlight vehicle nearest mouse
-        OpenSteer::App::highlightVehicleUtility (nearMouse);
+        App::get_singleton()->get_singleton()->highlightVehicleUtility (nearMouse);
     }
 
     void close (void)
@@ -923,10 +923,10 @@ public:
         for (int i = 0; i<ctfEnemyCount; i++) ctfEnemies[i]->reset ();
 
         // reset camera position
-        OpenSteer::App::position2dCamera (*ctfSeeker);
+        App::get_singleton()->get_singleton()->position2dCamera (*ctfSeeker);
 
         // make camera jump immediately to new position
-        OpenSteer::App::camera.doNotSmoothNextMove ();
+        App::get_singleton()->get_singleton()->camera.doNotSmoothNextMove ();
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -943,10 +943,10 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        App::printMessage (message);
-        App::printMessage ("  F1     add one obstacle.");
-        App::printMessage ("  F2     remove one obstacle.");
-        App::printMessage ("");
+        App::get_singleton()->printMessage (message);
+        App::get_singleton()->printMessage ("  F1     add one obstacle.");
+        App::get_singleton()->printMessage ("  F2     remove one obstacle.");
+        App::get_singleton()->printMessage ("");
     }
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) all;}

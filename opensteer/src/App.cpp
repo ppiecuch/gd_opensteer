@@ -46,6 +46,7 @@
 #include "OpenSteer/App.h"
 
 #include <algorithm>
+#include <string>
 #include <sstream>
 
 namespace OpenSteer {
@@ -73,58 +74,8 @@ namespace OpenSteer {
     }
 }
 
-// ----------------------------------------------------------------------------
-// keeps track of both "real time" and "simulation time"
 
-
-OpenSteer::Clock OpenSteer::App::clock;
-
-
-// ----------------------------------------------------------------------------
-// camera automatically tracks selected vehicle
-
-
-OpenSteer::Camera OpenSteer::App::camera;
-
-
-// ----------------------------------------------------------------------------
-// currently selected plug-in (user can choose or cycle through them)
-
-
-OpenSteer::PlugIn* OpenSteer::App::selectedPlugIn = NULL;
-
-
-// ----------------------------------------------------------------------------
-// currently selected vehicle.  Generally the one the camera follows and
-// for which additional information may be displayed.  Clicking the mouse
-// near a vehicle causes it to become the Selected Vehicle.
-
-
-OpenSteer::AbstractVehicle* OpenSteer::App::selectedVehicle = NULL;
-
-
-// ----------------------------------------------------------------------------
-// phase: identifies current phase of the per-frame update cycle
-
-
-int OpenSteer::App::phase = OpenSteer::App::overheadPhase;
-
-
-// ----------------------------------------------------------------------------
-// graphical annotation: master on/off switch
-
-
-bool OpenSteer::App::enableAnnotation = true;
-
-
-// ----------------------------------------------------------------------------
-// XXX apparently MS VC6 cannot handle initialized static const members,
-// XXX so they have to be initialized not-inline.
-
-
-const int OpenSteer::App::overheadPhase = 0;
-const int OpenSteer::App::updatePhase = 1;
-const int OpenSteer::App::drawPhase = 2;
+OpenSteer::App* OpenSteer::App::singleton = NULL;
 
 
 // ----------------------------------------------------------------------------
@@ -136,9 +87,18 @@ namespace {
 
 } // anonymous namespace
 
-void 
-OpenSteer::App::initialize (void)
+OpenSteer::App::App (void)
 {
+    singleton = this;
+
+    enableAnnotation = true;
+    phaseTimerBase = 0;
+    phaseStackIndex = 0;
+
+    mouseX = 0;
+    mouseY = 0;
+    mouseInWindow = false;
+
     // select the default PlugIn
     selectDefaultPlugIn ();
 
@@ -158,6 +118,10 @@ OpenSteer::App::initialize (void)
     openSelectedPlugIn ();
 }
 
+OpenSteer::App::~App (void)
+{
+    singleton = NULL;
+}
 
 // ----------------------------------------------------------------------------
 // main update function: step simulation forward and redraw scene
@@ -443,7 +407,7 @@ OpenSteer::AbstractVehicle*
 OpenSteer::App::findVehicleNearestScreenPosition (int x, int y)
 {
     // find the direction from the camera position to the given pixel
-    const Vec3 direction = Draw::directionFromCameraToScreenPosition (x, y);
+    const Vec3 direction = App::get_singleton()->cameraToScreenPosition (x, y);
 
     // iterate over all vehicles to find the one whose center is nearest the
     // "eye-mouse" selection line
@@ -468,15 +432,6 @@ OpenSteer::App::findVehicleNearestScreenPosition (int x, int y)
 
     return nearest;
 }
-
-
-// ----------------------------------------------------------------------------
-// for storing most recent mouse state
-
-
-int OpenSteer::App::mouseX = 0;
-int OpenSteer::App::mouseY = 0;
-bool OpenSteer::App::mouseInWindow = false;
 
 
 // ----------------------------------------------------------------------------
@@ -574,20 +529,11 @@ OpenSteer::App::updateCamera (const float currentTime,
 
 
 // ----------------------------------------------------------------------------
-// some camera-related default constants
-
-
-const float OpenSteer::App::camera2dElevation = 8;
-const float OpenSteer::App::cameraTargetDistance = 13;
-const OpenSteer::Vec3 OpenSteer::App::cameraTargetOffset (0, OpenSteer::App::camera2dElevation, 0);
-
-
-// ----------------------------------------------------------------------------
 // ground plane grid-drawing utility used by several plug-ins
 
 
 void 
-OpenSteer::App::gridUtility (const Vec3& gridTarget)
+OpenSteer::App::gridUtility (const Vec3& gridTarget, bool withLines)
 {
     // round off target to the nearest multiple of 2 (because the
     // checkboard grid with a pitch of 1 tiles with a period of 2)
@@ -604,9 +550,8 @@ OpenSteer::App::gridUtility (const Vec3& gridTarget)
     Draw::drawCheckerboardGrid (50, 50, gridCenter, gray1, gray2);
 
     // alternate style:
-#if 0
-    Draw::drawLineGrid (50, 50, gridCenter, black);
-#endif
+    if (withLines)
+        Draw::drawLineGrid (50, 50, gridCenter, gBlack);
 }
 
 
@@ -725,27 +670,15 @@ OpenSteer::App::keyboardMiniHelp (void)
 }
 
 
-// ----------------------------------------------------------------------------
-// manage App phase transitions (xxx and maintain phase timers)
-
-
-int OpenSteer::App::phaseStackIndex = 0;
-const int OpenSteer::App::phaseStackSize = 5;
-int OpenSteer::App::phaseStack [OpenSteer::App::phaseStackSize];
-
-
 void 
 OpenSteer::App::pushPhase (const int newPhase)
 {
     // update timer for current (old) phase: add in time since last switch
     updatePhaseTimers ();
-
     // save old phase
     phaseStack[phaseStackIndex++] = phase;
-
     // set new phase
     phase = newPhase;
-
     // check for stack overflow
     if (phaseStackIndex >= phaseStackSize) errorExit ("phaseStack overflow");
 }
@@ -756,17 +689,9 @@ OpenSteer::App::popPhase (void)
 {
     // update timer for current (old) phase: add in time since last switch
     updatePhaseTimers ();
-
     // restore old phase
     phase = phaseStack[--phaseStackIndex];
 }
-
-
-// ----------------------------------------------------------------------------
-
-
-float OpenSteer::App::phaseTimerBase = 0;
-float OpenSteer::App::phaseTimers [drawPhase+1];
 
 
 void 

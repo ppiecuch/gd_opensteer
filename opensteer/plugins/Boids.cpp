@@ -114,7 +114,7 @@ public:
     // draw this boid into the scene
     void draw (void)
     {
-        OpenSteer::App::drawCircleHighlightOnVehicle(*this, gGray70);
+        OpenSteer::App::get_singleton()->drawCircleHighlightOnVehicle(*this, gGray70);
     }
 
 
@@ -275,13 +275,13 @@ public:
         for (int i = 0; i < 200; i++) addBoidToFlock ();
 
         // initialize camera
-        OpenSteer::App::init3dCamera(*OpenSteer::App::selectedVehicle);
-        OpenSteer::App::camera.mode = Camera::cmFixed;
-        OpenSteer::App::camera.fixedDistDistance = OpenSteer::App::cameraTargetDistance;
-        OpenSteer::App::camera.fixedDistVOffset = 0;
-        OpenSteer::App::camera.lookdownDistance = 20;
-        OpenSteer::App::camera.aimLeadTime = 0.5;
-        OpenSteer::App::camera.povOffset.set (0, 0.5, -2);
+        OpenSteer::App::get_singleton()->init3dCamera(*OpenSteer::App::get_singleton()->selectedVehicle);
+        OpenSteer::App::get_singleton()->camera.mode = Camera::cmFixed;
+        OpenSteer::App::get_singleton()->camera.fixedDistDistance = OpenSteer::App::get_singleton()->cameraTargetDistance;
+        OpenSteer::App::get_singleton()->camera.fixedDistVOffset = 0;
+        OpenSteer::App::get_singleton()->camera.lookdownDistance = 20;
+        OpenSteer::App::get_singleton()->camera.aimLeadTime = 0.5;
+        OpenSteer::App::get_singleton()->camera.povOffset.set (0, 0.5, -2);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -296,17 +296,17 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *OpenSteer::App::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteer::App::get_singleton()->selectedVehicle;
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *OpenSteer::App::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteer::App::get_singleton()->vehicleNearestToMouse ();
         // update camera
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteer::App::get_singleton()->updateCamera (currentTime, elapsedTime, selected);
         // draw each boid in flock
         for (iterator i = flock.begin(); i != flock.end(); i++) (**i).draw ();
         // highlight vehicle nearest mouse
-        OpenSteer::App::drawCircleHighlightOnVehicle (nearMouse, gGray70);
+        OpenSteer::App::get_singleton()->drawCircleHighlightOnVehicle (nearMouse, gGray70);
         // highlight selected vehicle
-        OpenSteer::App::drawCircleHighlightOnVehicle (selected, gGray50);
+        OpenSteer::App::get_singleton()->drawCircleHighlightOnVehicle (selected, gGray50);
 
         // display status in the upper left corner of the window
         std::ostringstream status;
@@ -344,10 +344,10 @@ public:
         for (iterator i = flock.begin(); i != flock.end(); i++) (**i).reset();
 
         // reset camera position
-        OpenSteer::App::position3dCamera (*OpenSteer::App::selectedVehicle);
+        OpenSteer::App::get_singleton()->position3dCamera (*OpenSteer::App::get_singleton()->selectedVehicle);
 
         // make camera jump immediately to new position
-        OpenSteer::App::camera.doNotSmoothNextMove ();
+        OpenSteer::App::get_singleton()->camera.doNotSmoothNextMove ();
     }
 
     // for purposes of demonstration, allow cycling through various
@@ -403,12 +403,12 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        OpenSteer::App::printMessage (message);
-        OpenSteer::App::printMessage ("  F1     add a boid to the flock.");
-        OpenSteer::App::printMessage ("  F2     remove a boid from the flock.");
-        OpenSteer::App::printMessage ("  F3     use next proximity database.");
-        OpenSteer::App::printMessage ("  F4     next flock boundary condition.");
-        OpenSteer::App::printMessage ("");
+        OpenSteer::App::get_singleton()->printMessage (message);
+        OpenSteer::App::get_singleton()->printMessage ("  F1     add a boid to the flock.");
+        OpenSteer::App::get_singleton()->printMessage ("  F2     remove a boid from the flock.");
+        OpenSteer::App::get_singleton()->printMessage ("  F3     use next proximity database.");
+        OpenSteer::App::get_singleton()->printMessage ("  F4     next flock boundary condition.");
+        OpenSteer::App::get_singleton()->printMessage ("");
     }
 
     void addBoidToFlock (void)
@@ -416,7 +416,7 @@ public:
         population++;
         Boid* boid = new Boid (*pd);
         flock.push_back (boid);
-        if (population == 1) OpenSteer::App::selectedVehicle = boid;
+        if (population == 1) OpenSteer::App::get_singleton()->selectedVehicle = boid;
     }
 
     void removeBoidFromFlock (void)
@@ -429,8 +429,8 @@ public:
             population--;
 
             // if it is OpenSteer::App's selected vehicle, unselect it
-            if (boid == OpenSteer::App::selectedVehicle)
-                OpenSteer::App::selectedVehicle = NULL;
+            if (boid == OpenSteer::App::get_singleton()->selectedVehicle)
+                OpenSteer::App::get_singleton()->selectedVehicle = NULL;
 
             // delete the Boid
             delete boid;

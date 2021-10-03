@@ -131,7 +131,7 @@ public:
     // draw this character/vehicle into the scene
     void draw (void)
     {
-        App::drawCircleHighlightOnVehicle(*this, Vec3(0,1,0));
+        App::get_singleton()->drawCircleHighlightOnVehicle(*this, Vec3(0,1,0));
         drawTrail ();
     }
 
@@ -219,7 +219,7 @@ public:
     // draw this character/vehicle into the scene
     void draw (void)
     {
-        App::drawCircleHighlightOnVehicle (*this, b_ImTeamA ? Vec3(1,0,0):Vec3(0,0,1));
+        App::get_singleton()->drawCircleHighlightOnVehicle (*this, b_ImTeamA ? Vec3(1,0,0):Vec3(0,0,1));
         drawTrail ();
     }
     // per-instance reference to its group
@@ -262,7 +262,7 @@ public:
         for(unsigned i=0; i < m_PlayerCountA ; i++)
         {
             Player *pMicTest = new Player(TeamA, m_AllPlayers, m_Ball, true, i);
-            OpenSteer::App::selectedVehicle = pMicTest;
+            App::get_singleton()->get_singleton()->selectedVehicle = pMicTest;
             TeamA.push_back (pMicTest);
             m_AllPlayers.push_back(pMicTest);
         }
@@ -271,15 +271,15 @@ public:
         for(unsigned i=0; i < m_PlayerCountB ; i++)
         {
             Player *pMicTest = new Player(TeamB, m_AllPlayers, m_Ball, false, i);
-            OpenSteer::App::selectedVehicle = pMicTest;
+            App::get_singleton()->get_singleton()->selectedVehicle = pMicTest;
             TeamB.push_back (pMicTest);
             m_AllPlayers.push_back(pMicTest);
         }
         // initialize camera
-        OpenSteer::App::init2dCamera (*m_Ball);
-        OpenSteer::App::camera.setPosition (10, OpenSteer::App::camera2dElevation, 10);
-        OpenSteer::App::camera.fixedPosition.set (40, 40, 40);
-        OpenSteer::App::camera.mode = Camera::cmFixed;
+        App::get_singleton()->get_singleton()->init2dCamera (*m_Ball);
+        App::get_singleton()->get_singleton()->camera.setPosition (10, App::get_singleton()->get_singleton()->camera2dElevation, 10);
+        App::get_singleton()->get_singleton()->camera.fixedPosition.set (40, 40, 40);
+        App::get_singleton()->get_singleton()->camera.mode = Camera::cmFixed;
         m_redScore = 0;
         m_blueScore = 0;
     }
@@ -338,9 +338,9 @@ public:
             Draw::drawTextAt3dLocation ("start", Vec3::zero, gGreen);
         }
         // update camera, tracking test vehicle
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, *OpenSteer::App::selectedVehicle);
+        App::get_singleton()->get_singleton()->updateCamera (currentTime, elapsedTime, *App::get_singleton()->get_singleton()->selectedVehicle);
         // draw "ground plane"
-        OpenSteer::App::gridUtility (Vec3(0,0,0));
+        App::get_singleton()->get_singleton()->gridUtility (Vec3(0,0,0));
     }
 
     void close (void)

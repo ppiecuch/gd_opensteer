@@ -1,10 +1,10 @@
 #include "OpenSteer/Vec3.h"
 #include "OpenSteer/LocalSpace.h"
 
-#include <sstring>
+#include <sstream>
 
 namespace OpenSteer {
-	// OpenSteer drawing interface
+	// OpenSteer system/drawing interface
 	namespace Draw {
 		void drawCameraLookAt (const Vec3& cameraPosition, const Vec3& pointToLookAt, const Vec3& up)
 		{
@@ -16,6 +16,9 @@ namespace OpenSteer {
 		{
 		}
 		void drawWideLine (const Vec3& startPoint, const Vec3& endPoint, const Vec3& color, const float width)
+		{
+		}
+		void drawLineGrid (int hseg, int vseg, const Vec3& center, const Vec3& color)
 		{
 		}
 		void drawCircle (const float radius, const Vec3& axis, const Vec3& center, const Vec3& color, const int segments, const bool filled, const bool in3d)

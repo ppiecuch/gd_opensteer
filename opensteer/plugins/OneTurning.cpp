@@ -77,7 +77,7 @@ public:
     // draw this character/vehicle into the scene
     void draw (void)
     {
-        OpenSteer::App::drawBoxHighlightOnVehicle (*this, gGray50);
+        App::get_singleton()->drawBoxHighlightOnVehicle (*this, gGray50);
         drawTrail ();
     }
 };
@@ -101,15 +101,13 @@ public:
     void open (void)
     {
         gOneTurning = new OneTurning;
-        OpenSteer::App::selectedVehicle = gOneTurning;
+        App::get_singleton()->selectedVehicle = gOneTurning;
         theVehicle.push_back (gOneTurning);
 
         // initialize camera
-        OpenSteer::App::init2dCamera (*gOneTurning);
-        OpenSteer::App::camera.setPosition (10,
-                                           OpenSteer::App::camera2dElevation,
-                                           10);
-        OpenSteer::App::camera.fixedPosition.set (40, 40, 40);
+        App::get_singleton()->init2dCamera (*gOneTurning);
+        App::get_singleton()->camera.setPosition (10, App::get_singleton()->camera2dElevation, 10);
+        App::get_singleton()->camera.fixedPosition.set (40, 40, 40);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -131,10 +129,10 @@ public:
         Draw::drawTextAt3dLocation ("start", Vec3::zero, gGreen);
 
         // update camera, tracking test vehicle
-        OpenSteer::App::updateCamera (currentTime, elapsedTime, *gOneTurning);
+        App::get_singleton()->updateCamera (currentTime, elapsedTime, *gOneTurning);
 
         // draw "ground plane"
-        OpenSteer::App::gridUtility (gOneTurning->position());
+        App::get_singleton()->gridUtility (gOneTurning->position());
     }
 
     void close (void)
